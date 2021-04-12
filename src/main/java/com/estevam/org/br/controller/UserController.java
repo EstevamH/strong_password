@@ -5,6 +5,7 @@ import com.estevam.org.br.dto.UserDTO;
 import javax.validation.Valid;
 
 import com.estevam.org.br.domain.User;
+import com.estevam.org.br.exceptions.EmailExistsException;
 import com.estevam.org.br.exceptions.InvalidPasswordException;
 import com.estevam.org.br.exceptions.ObjectNotFoundException;
 import com.estevam.org.br.repository.UserRepository;
@@ -30,6 +31,9 @@ public class UserController {
         if (!dto.getPassword().matches(pattern))
             throw new InvalidPasswordException(
                     "Senha deve conter entre 6 e 12 dígitos, uma letra minúscula, uma letra maiúscula, um número e um caractere especial (Ex: @#$%&)");
+
+        if (userRepository.existsByEmail(dto.getEmail()))
+            throw new EmailExistsException("Email já cadastrado");
 
         var user = new User();
         user.setEmail(dto.getEmail());
